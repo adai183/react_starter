@@ -1,5 +1,5 @@
-const componentNameCheck = require('../utils/componentNameCheck')
-const trimTemplateFile = require('../utils/trimTemplateFile')
+const componentNameCheck = require('../utils/componentNameCheck');
+const trimTemplateFile = require('../utils/trimTemplateFile');
 
 module.exports = {
   description: 'Add a component to the app',
@@ -15,12 +15,12 @@ module.exports = {
       type: 'input',
       name: 'name',
       message: 'What is the name of the component?',
-      default: 'MyComponent',
+      default: 'Button',
       validate: (value) => {
         if ((/.+/).test(value)) {
-          return componentNameCheck(value) ? 'That component already exists.' : true
+          return componentNameCheck(value) ? 'That component already exists.' : true;
         }
-        return 'The name is required.'
+        return 'The name is required.';
       },
     },
     {
@@ -39,35 +39,43 @@ module.exports = {
   actions: (data) => {
     const actions = [{
       type: 'add',
-      path: '../../app/components/{{properCase name}}/index.js',
-      templateFile: data.type === 'ES6 Class'
-      ? './component/es6class.js.hbs' : './component/stateless.js.hbs',
+      path: '../../app/src/components/{{properCase name}}/index.js',
+      templateFile: data.type === 'ES6 Class' ?
+        './component/es6class.js.hbs' : './component/stateless.js.hbs',
       abortOnFail: true,
     }, {
       type: 'add',
-      path: '../../app/components/{{properCase name}}/tests/index.test.js',
+      path: '../../app/src/components/{{properCase name}}/tests/index.test.js',
       templateFile: './component/test.js.hbs',
       abortOnFail: true,
-    }]
+    }];
 
     // If they want a CSS file, add styles.css
     if (data.wantSCSSModules) {
       actions.push({
         type: 'add',
-        path: '../../app/components/{{properCase name}}/index.module.scss',
+        path: '../../app/src/components/{{properCase name}}/index.module.scss',
         templateFile: './component/styles.scss.hbs',
         abortOnFail: true,
-      })
+      });
     }
+
+    // README.md
+    actions.push({
+      type: 'add',
+      path: '../../app/src/components/{{properCase name}}/README.md',
+      templateFile: './component/README.md.hbs',
+      abortOnFail: true,
+    });
 
     // Add container export to index.js in container root folder
     actions.push({
       type: 'modify',
-      path: '../../app/components/index.js',
+      path: '../../app/src/components/index.js',
       pattern: /(\/\* Assemble all components for export \*\/)/g,
       template: trimTemplateFile('config/generators/component/export.js.hbs'),
-    })
+    });
 
-    return actions
+    return actions;
   },
-}
+};

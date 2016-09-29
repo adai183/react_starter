@@ -1,5 +1,5 @@
 const componentNameCheck = require('../utils/componentNameCheck');
-const trimTemplateFile = require ('../utils/trimTemplateFile');
+const trimTemplateFile = require('../utils/trimTemplateFile');
 
 module.exports = {
   description: 'Add a container component',
@@ -8,7 +8,7 @@ module.exports = {
       type: 'input',
       name: 'name',
       message: 'What should it be called?',
-      default: 'MyContainer',
+      default: 'Scalable',
       validate: value => {
         if ((/.+/).test(value)) {
           return componentNameCheck(value) ? 'A container with this name already exists' : true;
@@ -31,19 +31,22 @@ module.exports = {
     },
   ],
   actions: (data) => {
-
     const actions = [{
       type: 'add',
-      path: '../../app/containers/{{properCase name}}/{{properCase name}}Container.js',
+      path: '../../app/src/containers/{{properCase name}}Container/index.js',
       templateFile: './container/index.js.hbs',
       abortOnFail: true,
-    }]
-
+    }, {
+      type: 'add',
+      path: '../../app/src/containers/{{properCase name}}Container/tests/index.test.js',
+      templateFile: './container/test.js.hbs',
+      abortOnFail: true,
+    }];
 
     // Add container export to index.js in container root folder
     actions.push({
       type: 'modify',
-      path: '../../app/containers/index.js',
+      path: '../../app/src/containers/index.js',
       pattern: /(\/\* Assemble all containers for export \*\/)/g,
       template: trimTemplateFile('config/generators/container/export.js.hbs'),
     });
@@ -51,7 +54,7 @@ module.exports = {
     if (data.wantSCSSModules) {
       actions.push({
         type: 'add',
-        path: '../../app/containers/{{properCase name}}/index.module.scss',
+        path: '../../app/src/containers/{{properCase name}}Container/index.module.scss',
         templateFile: './container/styles.scss.hbs',
         abortOnFail: true,
       });
@@ -63,21 +66,29 @@ module.exports = {
       // Actions
       actions.push({
         type: 'add',
-        path: '../../app/containers/{{properCase name}}/actions.js',
+        path: '../../app/src/containers/{{properCase name}}Container/actions.js',
         templateFile: './container/actions.js.hbs',
         abortOnFail: true,
       });
       actions.push({
         type: 'add',
-        path: '../../app/containers/{{properCase name}}/tests/actions.test.js',
+        path: '../../app/src/containers/{{properCase name}}Container/tests/actions.test.js',
         templateFile: './container/actions.test.js.hbs',
+        abortOnFail: true,
+      });
+
+      // README.md
+      actions.push({
+        type: 'add',
+        path: '../../app/src/containers/{{properCase name}}Container/README.md',
+        templateFile: './container/README.md.hbs',
         abortOnFail: true,
       });
 
       // Constants
       actions.push({
         type: 'add',
-        path: '../../app/containers/{{properCase name}}/constants.js',
+        path: '../../app/src/containers/{{properCase name}}Container/constants.js',
         templateFile: './container/constants.js.hbs',
         abortOnFail: true,
       });
@@ -85,13 +96,13 @@ module.exports = {
       // Reducer
       actions.push({
         type: 'add',
-        path: '../../app/containers/{{properCase name}}/reducer.js',
+        path: '../../app/src/containers/{{properCase name}}Container/reducer.js',
         templateFile: './container/reducer.js.hbs',
         abortOnFail: true,
       });
       actions.push({
         type: 'add',
-        path: '../../app/containers/{{properCase name}}/tests/reducer.test.js',
+        path: '../../app/src/containers/{{properCase name}}Container/tests/reducer.test.js',
         templateFile: './container/reducer.test.js.hbs',
         abortOnFail: true,
       });
